@@ -125,27 +125,53 @@ ft__bad_rect_pack_end_line(Bad_Rect_Pack *pack){
 
 internal Vec3_i32
 ft__bad_rect_pack_next(Bad_Rect_Pack *pack, Vec2_i32 dim){
-    Vec3_i32 result = {};
-    if (dim.x <= pack->max_dim.x && dim.y <= pack->max_dim.y){
-        if (pack->current_line_h < dim.y){
-            pack->current_line_h = dim.y;
+    
+    Vec3_i32 result = { };
+    
+    // NOTE(simon, 28/02/24): Does this character fit in the texture if it's the only character ?
+    if ( dim.x <= pack->max_dim.x && dim.y <= pack->max_dim.y ){
+        
+        b8 end_line = false;
+        
+        if ( pack->p.x + dim.x > pack->max_dim.x ) {
+            // NOTE(simon, 28/02/24): Can't fit the character horizontally.
+            end_line = true;
         }
-        if (pack->current_line_h > pack->max_dim.y){
-            ft__bad_rect_pack_end_line(pack);
+        
+        if ( pack->current_line_h < dim.y && pack->p.y + dim.y > pack->max_dim.y ) {
+            // NOTE(simon, 28/02/24): Character doesn't fit in the current line height, AND we
+            // can't grow the line height.
+            end_line = true;
+        }
+        
+        if ( end_line ) {
+            ft__bad_rect_pack_end_line( pack );
+        }
+        
+        if ( pack->p.y + dim.y > pack->max_dim.y ) {
+            Assert( end_line );
+            // NOTE(simon, 28/02/24): We ended a line. There isn't enough space on a new line to
+            // fit the character vertically. We need to go to the next texture in the array.
+            // In a new texture the character is guaranteed to fit, because of the outer most if.
             pack->p.y = 0;
             pack->dim.z += 1;
             pack->p.z += 1;
+            
+            // NOTE(simon, 28/02/24): There are no checks on the z axis range, but texture arrays
+            // have a limit. At the moment it's 2048 on both OpenGL and DirectX.
         }
-        else{
-            if (pack->p.x + dim.x > pack->max_dim.x){
-                ft__bad_rect_pack_end_line(pack);
-            }
-            result = pack->p;
-            pack->p.x += dim.x;
-            pack->current_line_h = Max(pack->current_line_h, dim.y);
-            pack->dim.x = clamp_bot(pack->dim.x, pack->p.x);
+        
+        // NOTE(simon, 28/02/24): We are now sure that the character will fit.
+        
+        if ( pack->current_line_h < dim.y ) {
+            pack->current_line_h = dim.y;
         }
+        
+        result = pack->p;
+        pack->p.x += dim.x;
+        pack->dim.x = Max( pack->dim.x, pack->p.x );
     }
+    
     return(result);
 }
 
