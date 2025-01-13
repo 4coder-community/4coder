@@ -321,7 +321,7 @@ struct Mouse_State{
     b8 release_l;
     b8 release_r;
     b8 out_of_window;
-    i32 wheel;
+    Vec2_f32 wheel;
     union{
         struct{
             i32 x;

@@ -270,9 +270,9 @@ CUSTOM_DOC("Reads the scroll wheel value from the mouse state and scrolls accord
 {
     View_ID view = get_active_view(app, Access_ReadVisible);
     Mouse_State mouse = get_mouse_state(app);
-    if (mouse.wheel != 0){
+    if (mouse.wheel.y != 0.f || mouse.wheel.x != 0.f){
         Buffer_Scroll scroll = view_get_buffer_scroll(app, view);
-        scroll.target = view_move_buffer_point(app, view, scroll.target, V2f32(0.f, (f32)mouse.wheel));
+        scroll.target = view_move_buffer_point(app, view, scroll.target, mouse.wheel);
         view_set_buffer_scroll(app, view, scroll, SetBufferScroll_SnapCursorIntoView);
     }
     if (mouse.l){
@@ -806,10 +806,10 @@ CUSTOM_DOC("Reads the state of the mouse wheel and uses it to either increase or
     if (now >= next_resize_time){
         next_resize_time = now + 50*1000;
         Mouse_State mouse = get_mouse_state(app);
-        if (mouse.wheel > 0){
+        if (mouse.wheel.y > 0.f){
             decrease_face_size(app);
         }
-        else if (mouse.wheel < 0){
+        else if (mouse.wheel.y < 0.f){
             increase_face_size(app);
         }
     }

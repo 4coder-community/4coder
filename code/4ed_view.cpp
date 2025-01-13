@@ -408,8 +408,19 @@ view_move_cursor_to_view(Thread_Context *tctx, Models *models, View *view, Buffe
         adjusted_y = false;
     }
     
+    b32 adjusted_x = true;
+    if (p.x < 0.f){
+        p.x = 0.f;
+    }
+    else if (p.x > view_dim.x){
+        p.x = view_dim.x;
+    }
+    else{
+        adjusted_x = false;
+    }
+    
     b32 result = false;
-    if (adjusted_y){
+    if (adjusted_y || adjusted_x){
         p += scroll.target.pixel_shift;
         *pos_in_out = file_pos_at_relative_xy(tctx, models, file,
                                               layout_func, view_dim.x, face,

@@ -672,7 +672,7 @@ run_lister(Application_Links *app, Lister *lister){
             case InputEventKind_MouseWheel:
             {
                 Mouse_State mouse = get_mouse_state(app);
-                lister->scroll.target.y += mouse.wheel;
+                lister->scroll.target.y += mouse.wheel.y;
                 lister_update_filtered_list(app, lister);
             }break;
             

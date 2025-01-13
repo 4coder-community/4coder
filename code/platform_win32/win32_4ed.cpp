@@ -88,7 +88,8 @@ struct Win32_Input_Chunk_Transient{
     b8 mouse_r_press;
     b8 mouse_r_release;
     b8 out_of_window;
-    i8 mouse_wheel;
+    i16 mouse_wheel_y;
+    i16 mouse_wheel_x;
     b8 trying_to_kill;
 };
 
@@ -1368,13 +1369,15 @@ win32_proc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
         case WM_MOUSEWHEEL:
         {
             win32vars.got_useful_event = true;
-            i32 rotation = GET_WHEEL_DELTA_WPARAM(wParam);
-            if (rotation > 0){
-                win32vars.input_chunk.trans.mouse_wheel = -100;
-            }
-            else{
-                win32vars.input_chunk.trans.mouse_wheel =  100;
-            }
+            i16 wheel_delta = HIWORD(wParam);
+            win32vars.input_chunk.trans.mouse_wheel_y = -wheel_delta;
+        }break;
+        
+        case WM_MOUSEHWHEEL:
+        {
+            win32vars.got_useful_event = true;
+            i16 wheel_delta = HIWORD(wParam);
+            win32vars.input_chunk.trans.mouse_wheel_x = +wheel_delta;
         }break;
         
         case WM_LBUTTONDOWN:
@@ -1973,7 +1976,9 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdS
         input.mouse.press_r = input_chunk.trans.mouse_r_press;
         input.mouse.release_r = input_chunk.trans.mouse_r_release;
         
-        input.mouse.wheel = input_chunk.trans.mouse_wheel;
+        input.mouse.wheel.y = (f32)input_chunk.trans.mouse_wheel_y;
+        input.mouse.wheel.x = (f32)input_chunk.trans.mouse_wheel_x;
+        
         input.mouse.p = input_chunk.pers.mouse;
         
         input.trying_to_kill = input_chunk.trans.trying_to_kill;

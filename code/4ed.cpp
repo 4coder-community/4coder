@@ -444,11 +444,11 @@ App_Step_Sig(app_step){
         event.mouse.modifiers = copy_modifier_set(scratch, &modifiers);
         push_input_event(scratch, &input_list, &event);
     }
-    if (input->mouse.wheel != 0){
+    if (input->mouse.wheel.y != 0 || input->mouse.wheel.x != 0){
         Input_Event event = {};
         event.kind = InputEventKind_MouseWheel;
-        event.mouse_wheel.value = (f32)(input->mouse.wheel);
-        event.mouse_wheel.p = input->mouse.p;
+        event.mouse_wheel.x = input->mouse.wheel.x;
+        event.mouse_wheel.y = input->mouse.wheel.y;
         event.mouse_wheel.modifiers = copy_modifier_set(scratch, &modifiers);
         push_input_event(scratch, &input_list, &event);
     }

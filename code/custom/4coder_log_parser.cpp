@@ -1057,7 +1057,7 @@ CUSTOM_DOC("Parses *log* and displays the 'log graph' UI")
             
             case InputEventKind_MouseWheel:
             {
-                f32 value = in.event.mouse_wheel.value;
+                f32 value = in.event.mouse_wheel.y;
                 log_graph.y_scroll += f32_round32(value);
             }break;
             
